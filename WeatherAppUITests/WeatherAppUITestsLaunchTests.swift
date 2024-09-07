@@ -1,13 +1,13 @@
 //
-//  WeatherAppUITestsLaunchTests.swift
-//  WeatherAppUITests
+//  __PROJECTNAMEIDENTIFIER___UITestsLaunchTests.swift
+//  __PROJECTNAMEIDENTIFIER___UITests
 //
-//  Created by Edson Yudi Toma on 06/09/24.
+//  Created on __DATEIDENTIFIER___.
 //
 
 import XCTest
 
-final class WeatherAppUITestsLaunchTests: XCTestCase {
+final class __PROJECTNAMEIDENTIFIER___UITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

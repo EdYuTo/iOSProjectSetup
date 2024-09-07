@@ -1,14 +1,14 @@
 //
-//  WeatherAppApp.swift
-//  WeatherApp
+//  __PROJECTNAMEIDENTIFIER___App.swift
+//  __PROJECTNAMEIDENTIFIER___
 //
-//  Created by Edson Yudi Toma on 06/09/24.
+//  Created on __DATEIDENTIFIER___.
 //
 
 import SwiftUI
 
 @main
-struct WeatherAppApp: App {
+struct __PROJECTNAMEIDENTIFIER___App: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

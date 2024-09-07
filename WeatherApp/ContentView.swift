@@ -1,8 +1,8 @@
 //
 //  ContentView.swift
-//  WeatherApp
+//  __PROJECTNAMEIDENTIFIER___
 //
-//  Created by Edson Yudi Toma on 06/09/24.
+//  Created on __DATEIDENTIFIER___.
 //
 
 import SwiftUI

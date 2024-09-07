@@ -1,14 +1,14 @@
 //
-//  WeatherAppTests.swift
-//  WeatherAppTests
+//  __PROJECTNAMEIDENTIFIER___Tests.swift
+//  __PROJECTNAMEIDENTIFIER___Tests
 //
-//  Created by Edson Yudi Toma on 06/09/24.
+//  Created on __DATEIDENTIFIER___.
 //
 
 import XCTest
-@testable import WeatherApp
+@testable import __PROJECTNAMEIDENTIFIER___
 
-final class WeatherAppTests: XCTestCase {
+final class __PROJECTNAMEIDENTIFIER___Tests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

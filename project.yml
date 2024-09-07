@@ -1,4 +1,4 @@
-name: WeatherApp
+name: __PROJECTNAMEIDENTIFIER___
 
 options:
   defaultConfig: Release
@@ -42,40 +42,40 @@ settings:
       SWIFT_COMPILATION_MODE: wholemodule
 
 targets:
-  WeatherApp:
+  __PROJECTNAMEIDENTIFIER___:
     type: application
     platform: iOS
-    sources: [WeatherApp]
+    sources: [__PROJECTNAMEIDENTIFIER___]
     postBuildScripts:
       - script: ./Scripts/swiftlint
         name: SwiftLint
         basedOnDependencyAnalysis: NO
     settings:
       base:
-        INFOPLIST_FILE: WeatherApp/Resources/Info.plist
+        INFOPLIST_FILE: __PROJECTNAMEIDENTIFIER___/Resources/Info.plist
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.weather
 
-  WeatherAppTests:
+  __PROJECTNAMEIDENTIFIER___Tests:
     type: bundle.unit-test
     platform: iOS
-    sources: [WeatherAppTests]
+    sources: [__PROJECTNAMEIDENTIFIER___Tests]
     dependencies:
-    - target: WeatherApp
+    - target: __PROJECTNAMEIDENTIFIER___
     settings:
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: 'YES'
         BUNDLE_LOADER: $(TEST_HOST)
         GENERATE_INFOPLIST_FILE: 'YES'
-        TEST_HOST: $(BUILT_PRODUCTS_DIR)/WeatherApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WeatherApp
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/__PROJECTNAMEIDENTIFIER___.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/__PROJECTNAMEIDENTIFIER___
 
-  WeatherAppUITests:
+  __PROJECTNAMEIDENTIFIER___UITests:
     type: bundle.ui-testing
     platform: iOS
-    sources: [WeatherAppUITests]
+    sources: [__PROJECTNAMEIDENTIFIER___UITests]
     dependencies:
-    - target: WeatherApp
+    - target: __PROJECTNAMEIDENTIFIER___
     settings:
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: 'YES'
         GENERATE_INFOPLIST_FILE: 'YES'
-        TEST_TARGET_NAME: WeatherApp
+        TEST_TARGET_NAME: __PROJECTNAMEIDENTIFIER___
