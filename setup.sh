@@ -41,9 +41,12 @@ find $PROJECT_NAME_INPUT -name "*$PROJECT_NAME_CONSTANT*" -type f | while read f
 done
 
 find $PROJECT_NAME_INPUT -type f | while read file; do
-    newfile=$(sed "s/$PROJECT_NAME_CONSTANT/$PROJECT_NAME_INPUT/g" $file)
-    newfile=$(echo "$newfile" | sed "s/$BUNDLE_PREFIX_CONSTANT/$BUNDLE_PREFIX_INPUT/g")
-    newfile=$(echo "$newfile" | sed "s/$DEVELOPMENT_TEAM_CONSTANT/$DEVELOPMENT_TEAM_INPUT/g")
-    newfile=$(echo "$newfile" | sed "s/$DATE_CONSTANT/$LOCALIZED_DATE/g")
-    echo "$newfile" > $file
+    sed -e "s/$PROJECT_NAME_CONSTANT/$PROJECT_NAME_INPUT/g" \
+        -e "s/$BUNDLE_PREFIX_CONSTANT/$BUNDLE_PREFIX_INPUT/g" \
+        -e "s/$DEVELOPMENT_TEAM_CONSTANT/$DEVELOPMENT_TEAM_INPUT/g" \
+        -e "s/$DATE_CONSTANT/$LOCALIZED_DATE/g" \
+        -i '' "$file"
 done
+
+cd $PROJECT_NAME_INPUT
+git init && git add . && git commit -m "Initial commit"
