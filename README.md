@@ -14,4 +14,6 @@ What it needs:
 * More templates? Improved base project.
 
 # How to run?
-`sh -c "$(curl -fsSL https://raw.githubusercontent.com/EdYuTo/iOSProjectSetup/main/setup.sh)"`
+```shell
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/EdYuTo/iOSProjectSetup/main/setup.sh)"
+```
