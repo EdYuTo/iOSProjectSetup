@@ -1,13 +1,13 @@
 //
-//  __PROJECTNAMEIDENTIFIER___UITests.swift
-//  __PROJECTNAMEIDENTIFIER___UITests
+//  __PROJECTNAMEIDENTIFIER__UITests.swift
+//  __PROJECTNAMEIDENTIFIER__UITests
 //
-//  Created __DATEIDENTIFIER___.
+//  Created __DATEIDENTIFIER__.
 //
 
 import XCTest
 
-final class __PROJECTNAMEIDENTIFIER___UITests: XCTestCase {
+final class __PROJECTNAMEIDENTIFIER__UITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

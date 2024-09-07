@@ -1,5 +1,5 @@
 included:
-    - __PROJECTNAMEIDENTIFIER___
+    - __PROJECTNAMEIDENTIFIER__
 
 disabled_rules:
     - vertical_whitespace

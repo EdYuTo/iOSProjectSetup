@@ -1,8 +1,8 @@
 //
 //  ContentView.swift
-//  __PROJECTNAMEIDENTIFIER___
+//  __PROJECTNAMEIDENTIFIER__
 //
-//  Created on __DATEIDENTIFIER___.
+//  Created on __DATEIDENTIFIER__.
 //
 
 import SwiftUI

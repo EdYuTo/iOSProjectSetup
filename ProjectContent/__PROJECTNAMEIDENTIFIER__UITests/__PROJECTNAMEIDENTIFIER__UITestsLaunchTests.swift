@@ -1,13 +1,13 @@
 //
-//  __PROJECTNAMEIDENTIFIER___UITestsLaunchTests.swift
-//  __PROJECTNAMEIDENTIFIER___UITests
+//  __PROJECTNAMEIDENTIFIER__UITestsLaunchTests.swift
+//  __PROJECTNAMEIDENTIFIER__UITests
 //
-//  Created on __DATEIDENTIFIER___.
+//  Created on __DATEIDENTIFIER__.
 //
 
 import XCTest
 
-final class __PROJECTNAMEIDENTIFIER___UITestsLaunchTests: XCTestCase {
+final class __PROJECTNAMEIDENTIFIER__UITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

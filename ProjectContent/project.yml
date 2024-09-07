@@ -1,4 +1,4 @@
-name: __PROJECTNAMEIDENTIFIER___
+name: __PROJECTNAMEIDENTIFIER__
 
 options:
   defaultConfig: Release
@@ -42,39 +42,39 @@ settings:
       SWIFT_COMPILATION_MODE: wholemodule
 
 targets:
-  __PROJECTNAMEIDENTIFIER___:
+  __PROJECTNAMEIDENTIFIER__:
     type: application
     platform: iOS
-    sources: [__PROJECTNAMEIDENTIFIER___]
+    sources: [__PROJECTNAMEIDENTIFIER__]
     postBuildScripts:
       - script: ./Scripts/swiftlint
         name: SwiftLint
         basedOnDependencyAnalysis: NO
     settings:
       base:
-        INFOPLIST_FILE: __PROJECTNAMEIDENTIFIER___/Resources/Info.plist
+        INFOPLIST_FILE: __PROJECTNAMEIDENTIFIER__/Resources/Info.plist
 
-  __PROJECTNAMEIDENTIFIER___Tests:
+  __PROJECTNAMEIDENTIFIER__Tests:
     type: bundle.unit-test
     platform: iOS
-    sources: [__PROJECTNAMEIDENTIFIER___Tests]
+    sources: [__PROJECTNAMEIDENTIFIER__Tests]
     dependencies:
-    - target: __PROJECTNAMEIDENTIFIER___
+    - target: __PROJECTNAMEIDENTIFIER__
     settings:
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: 'YES'
         BUNDLE_LOADER: $(TEST_HOST)
         GENERATE_INFOPLIST_FILE: 'YES'
-        TEST_HOST: $(BUILT_PRODUCTS_DIR)/__PROJECTNAMEIDENTIFIER___.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/__PROJECTNAMEIDENTIFIER___
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/__PROJECTNAMEIDENTIFIER__.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/__PROJECTNAMEIDENTIFIER__
 
-  __PROJECTNAMEIDENTIFIER___UITests:
+  __PROJECTNAMEIDENTIFIER__UITests:
     type: bundle.ui-testing
     platform: iOS
-    sources: [__PROJECTNAMEIDENTIFIER___UITests]
+    sources: [__PROJECTNAMEIDENTIFIER__UITests]
     dependencies:
-    - target: __PROJECTNAMEIDENTIFIER___
+    - target: __PROJECTNAMEIDENTIFIER__
     settings:
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: 'YES'
         GENERATE_INFOPLIST_FILE: 'YES'
-        TEST_TARGET_NAME: __PROJECTNAMEIDENTIFIER___
+        TEST_TARGET_NAME: __PROJECTNAMEIDENTIFIER__
