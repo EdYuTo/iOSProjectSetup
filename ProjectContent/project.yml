@@ -53,7 +53,6 @@ targets:
     settings:
       base:
         INFOPLIST_FILE: __PROJECTNAMEIDENTIFIER___/Resources/Info.plist
-        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.weather
 
   __PROJECTNAMEIDENTIFIER___Tests:
     type: bundle.unit-test
