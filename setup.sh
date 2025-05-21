@@ -27,7 +27,7 @@ fi
 
 git clone --no-checkout $GITHUB_REPO_URL $GITHUB_REPO_NAME && cd $GITHUB_REPO_NAME
 git sparse-checkout init --no-cone && git sparse-checkout set $SAMPLE_DIR
-git checkout main
+git checkout fastlane
 mv $SAMPLE_DIR $CURRENT_DIR/$PROJECT_NAME_INPUT
 cd - && rm -rf $GITHUB_REPO_NAME
 
