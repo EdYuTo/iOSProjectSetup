@@ -1,5 +1,6 @@
 #!/bin/bash
 
+CURRENT_DIR=$(pwd)
 SAMPLE_DIR="ProjectContent"
 GITHUB_REPO_NAME=$(mktemp -d)
 GITHUB_REPO_URL="https://github.com/EdYuTo/iOSProjectSetup.git"
@@ -27,7 +28,7 @@ fi
 git clone --no-checkout $GITHUB_REPO_URL $GITHUB_REPO_NAME && cd $GITHUB_REPO_NAME
 git sparse-checkout init --no-cone && git sparse-checkout set $SAMPLE_DIR
 git checkout main
-mv $SAMPLE_DIR ../$PROJECT_NAME_INPUT
+mv $SAMPLE_DIR $CURRENT_DIR/$PROJECT_NAME_INPUT
 cd - && rm -rf $GITHUB_REPO_NAME
 
 find $PROJECT_NAME_INPUT -name "*$PROJECT_NAME_CONSTANT*" -type d | while read directory; do
