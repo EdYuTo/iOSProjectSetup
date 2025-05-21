@@ -52,3 +52,10 @@ TestResults*
 Build/
 build_data/
 DerivedData
+
+### Fastlane ###
+fastlane/report.xml
+fastlane/test_output
+
+### Environment ###
+.secrets

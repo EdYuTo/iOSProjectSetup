@@ -15,5 +15,5 @@ What it needs:
 
 # How to run?
 ```shell
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/EdYuTo/iOSProjectSetup/main/setup.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/EdYuTo/iOSProjectSetup/fastlane/setup.sh)"
 ```
