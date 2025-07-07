@@ -55,12 +55,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Generate project
-        uses: xavierLowmiller/xcodegen-action@1.1.2
-        with:
-          spec: project.yml
-          version: '2.32.0'
-
       - name: Setup Xcode version
         uses: maxim-lobanov/setup-xcode@v1.5.1
         with:
