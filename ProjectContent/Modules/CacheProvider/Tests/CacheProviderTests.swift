@@ -226,9 +226,9 @@ private extension CacheProviderTests {
 
     struct Unencodable: Codable {
         func encode(to encoder: any Encoder) throws {
-            throw encoding.invalidValue(
+            throw EncodingError.invalidValue(
                 self,
-                encoding.Context(codingPath: [], debugDescription: "Unencodable")
+                EncodingError.Context(codingPath: [], debugDescription: "Unencodable")
             )
         }
     }

@@ -50,7 +50,7 @@ extension NetworkProvider: NetworkProviderProtocol {
                 headers: response.headers,
                 content: content
             )
-        } catch let error as Swift.decoding {
+        } catch let error as Swift.DecodingError {
             throw NetworkError.decoding(description: error.localizedDescription, statusCode: statusCode)
         } catch {
             throw error

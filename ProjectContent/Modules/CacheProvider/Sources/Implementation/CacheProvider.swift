@@ -42,7 +42,7 @@ extension CacheProvider: CacheProviderProtocol {
             let encoder = JSONEncoder()
             let data = try encoder.encode(value)
             try await accessor.set(data)
-        } catch let error as Swift.encoding {
+        } catch let error as Swift.EncodingError {
             throw CacheError.encoding(description: error.localizedDescription)
         } catch {
             throw CacheError.unknown(description: error.localizedDescription)
