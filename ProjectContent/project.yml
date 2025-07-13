@@ -43,11 +43,11 @@ settings:
 
 projectReferences:
   Cache:
-    path: Modules/Cache/Cache.xcodeproj
+    path: Modules/CacheProvider/Cache.xcodeproj
   Logger:
-    path: Modules/Logger/DebugLogger.xcodeproj
+    path: Modules/DebugLoggerProvider/DebugLogger.xcodeproj
   Network:
-    path: Modules/Network/Network.xcodeproj
+    path: Modules/NetworkProvider/Network.xcodeproj
 
 targets:
   __PROJECTNAMEIDENTIFIER__:

@@ -44,7 +44,7 @@ platform :ios do
 
   desc 'Generates Cache module'
   lane :generate_cache_module do
-    Dir.chdir('../Modules/Cache') do
+    Dir.chdir('../Modules/CacheProvider') do
       message('Generating Cache module')
       sh 'bundle exec ../../Scripts/xcodegen'
     end
@@ -52,7 +52,7 @@ platform :ios do
 
   desc 'Generates Logger module'
   lane :generate_logger_module do
-    Dir.chdir('../Modules/Logger') do
+    Dir.chdir('../Modules/DebugLoggerProvider') do
       message('Generating Logger module')
       sh 'bundle exec ../../Scripts/xcodegen'
     end
@@ -60,7 +60,7 @@ platform :ios do
 
   desc 'Generates Network module'
   lane :generate_network_module do
-    Dir.chdir('../Modules/Network') do
+    Dir.chdir('../Modules/NetworkProvider') do
       message('Generating Network module')
       sh 'bundle exec ../../Scripts/xcodegen'
     end
