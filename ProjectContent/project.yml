@@ -19,6 +19,8 @@ settings:
     LOCALIZED_STRING_SWIFTUI_SUPPORT: 'NO'
     PRODUCT_BUNDLE_IDENTIFIER: __PROJECTBUNDLEPREFIX__.$(PRODUCT_NAME)
     PRODUCT_NAME: $(TARGET_NAME)
+    STRIP_INSTALLED_PRODUCT: 'NO'
+    ALWAYS_SEARCH_USER_PATHS: 'NO'
 
     # Target
     IPHONEOS_DEPLOYMENT_TARGET: '15.0'
@@ -39,11 +41,23 @@ settings:
     Release:
       SWIFT_COMPILATION_MODE: wholemodule
 
+projectReferences:
+  Cache:
+    path: Modules/Cache/Cache.xcodeproj
+  Logger:
+    path: Modules/Logger/DebugLogger.xcodeproj
+  Network:
+    path: Modules/Network/Network.xcodeproj
+
 targets:
   __PROJECTNAMEIDENTIFIER__:
     type: application
     platform: iOS
     sources: [__PROJECTNAMEIDENTIFIER__]
+    dependencies:
+      - target: Cache/CacheProvider
+      - target: Logger/DebugLoggerProvider
+      - target: Network/NetworkProvider
     postBuildScripts:
       - script: chmod +x ./Scripts/lint-checker
         name: Lint permissions
@@ -82,3 +96,28 @@ targets:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: 'YES'
         GENERATE_INFOPLIST_FILE: 'YES'
         TEST_TARGET_NAME: __PROJECTNAMEIDENTIFIER__
+  
+schemes:
+  __PROJECTNAMEIDENTIFIER__:
+    build:
+      targets:
+        __PROJECTNAMEIDENTIFIER__: all
+        __PROJECTNAMEIDENTIFIER__Tests: [test]
+        __PROJECTNAMEIDENTIFIER__UITests: [test]
+        Cache/CacheProvider: [test]
+        Network/NetworkProvider: [test]
+    test:
+      gatherCoverageData: YES
+      coverageTargets:
+        - __PROJECTNAMEIDENTIFIER__
+        - Cache/CacheProvider
+        - Network/NetworkProvider
+      targets:
+        - name: __PROJECTNAMEIDENTIFIER__Tests
+          paralelizable: true
+        - name: __PROJECTNAMEIDENTIFIER__UITests
+          paralelizable: true
+        - name: Cache/CacheProviderTests
+          paralelizable: true
+        - name: Network/NetworkProviderTests
+          paralelizable: true
