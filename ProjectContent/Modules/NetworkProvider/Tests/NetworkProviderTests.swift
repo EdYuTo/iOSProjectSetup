@@ -112,7 +112,8 @@ final class NetworkProviderTests: XCTestCase {
         } catch {
             let error = (error as NSError)
             let expectedError = NetworkError.invalidResponse as NSError
-            guard error.domain == expectedError.domain, error.code == expectedError.code else {                XCTFail("Error should be \(NetworkError.invalidResponse) but is \(error)")
+            guard error.domain == expectedError.domain, error.code == expectedError.code else {               
+                XCTFail("Error should be \(NetworkError.invalidResponse) but is \(error)")
                 return
             }
         }
@@ -123,7 +124,7 @@ final class NetworkProviderTests: XCTestCase {
 
         for errorCode in connectionErrorCodes {
             do {
-                URLProtocolMock.error = NSError(domain: "__PROJECTNAMEIDENTIFIER__.NetworkError", code: errorCode)
+                URLProtocolMock.error = NSError(domain: "NetworkProvider.NetworkError", code: errorCode)
 
                 _ = try await sut.makeRequest(NetworkRequest(endpoint: #file))
                 XCTFail("Error should be \(NetworkError.connection) but didn't throw")
