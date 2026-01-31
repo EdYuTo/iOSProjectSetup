@@ -1,0 +1,210 @@
+# frozen_string_literal: true
+# rubocop:disable Metrics/BlockLength, Metrics/MethodLength, Metrics/AbcSize
+
+require 'fileutils'
+require 'yaml'
+
+MODULE_NAME_PLACEHOLDER = '__MODULENAME__'
+BUNDLE_PREFIX_PLACEHOLDER = '__PROJECTBUNDLEPREFIX__'
+DEVELOPMENT_TEAM_PLACEHOLDER = '__PROJECTDEVELOPMENTTEAM__'
+DEPLOYMENT_TARGET_PLACEHOLDER = '__DEPLOYMENTTARGET__'
+DATE_PLACEHOLDER = '__DATEIDENTIFIER__'
+
+# Helper to generate a module's xcodeproj
+def generate_module(module_folder, module_display_name = nil)
+  display_name = module_display_name || module_folder
+  Dir.chdir("../Modules/#{module_folder}") do
+    message("Generating #{display_name} module")
+    sh 'bundle exec ../../Scripts/xcodegen'
+  end
+end
+
+# Generate all modules found in the Modules directory
+def generate_all_modules
+  modules_dir = File.expand_path('../Modules', Dir.pwd)
+  return unless Dir.exist?(modules_dir)
+
+  Dir.children(modules_dir).each do |folder|
+    module_path = File.join(modules_dir, folder)
+    next unless File.directory?(module_path) && File.exist?(File.join(module_path, 'project.yml'))
+
+    generate_module(folder)
+  end
+end
+
+platform :ios do
+  # ==================== Framework Scaffolding ====================
+
+  desc "Creates a new framework module with the given name
+
+#### Parameters
+  * frameworkName - The name of the framework to create (required)
+
+#### Example
+  bundle exec fastlane makeFramework frameworkName:MyNewModule"
+  lane :makeFramework do |options|
+    framework_name = options[:frameworkName]
+
+    if framework_name.nil? || framework_name.empty?
+      UI.user_error!('frameworkName parameter is required. Usage: bundle exec fastlane makeFramework frameworkName:MyModule')
+    end
+
+    modules_path = File.expand_path('../Modules', Dir.pwd)
+    framework_path = File.join(modules_path, framework_name)
+
+    # Check if module already exists
+    if Dir.exist?(framework_path)
+      UI.user_error!("Module '#{framework_name}' already exists at #{framework_path}")
+    end
+
+    message("Creating framework: #{framework_name}")
+
+    # Copy template and replace placeholders
+    copy_module_template(framework_path, framework_name)
+
+    # Update main project.yml
+    update_main_project_yml(framework_name)
+
+    UI.success("Framework '#{framework_name}' created successfully!")
+    UI.message("Next steps:")
+    UI.message("  1. Run 'bundle exec fastlane generate_project' to generate the Xcode project")
+    UI.message("  2. Add your implementation to Modules/#{framework_name}/Sources/")
+  end
+end
+
+# ==================== Helper Methods ====================
+
+def copy_module_template(framework_path, framework_name)
+  message("Copying module template to #{framework_path}")
+
+  template_path = File.join(Dir.pwd, 'Templates', 'ModuleTemplate')
+
+  unless Dir.exist?(template_path)
+    UI.user_error!("Module template not found at #{template_path}")
+  end
+
+  # Read values from main project.yml for placeholder replacement
+  main_project_yml_path = File.expand_path('../project.yml', Dir.pwd)
+  main_project_yml = YAML.load_file(main_project_yml_path)
+
+  bundle_identifier = main_project_yml.dig('settings', 'base', 'PRODUCT_BUNDLE_IDENTIFIER') || "#{BUNDLE_PREFIX_PLACEHOLDER}.$(PRODUCT_NAME)"
+  bundle_prefix = bundle_identifier.sub(/\.\$\(PRODUCT_NAME\)$/, '')
+  development_team = main_project_yml.dig('settings', 'base', 'DEVELOPMENT_TEAM') || DEVELOPMENT_TEAM_PLACEHOLDER
+  deployment_target = main_project_yml.dig('settings', 'base', 'IPHONEOS_DEPLOYMENT_TARGET') || '15.0'
+  current_date = Time.now.strftime('%x')
+
+  # Copy template directory
+  FileUtils.cp_r(template_path, framework_path)
+
+  # Create additional folders (Interfaces, Common)
+  FileUtils.mkdir_p(File.join(framework_path, 'Sources', 'Interfaces'))
+  FileUtils.mkdir_p(File.join(framework_path, 'Sources', 'Common'))
+
+  # Rename files containing __MODULENAME__ in their names
+  rename_template_files(framework_path, framework_name)
+
+  # Replace placeholders in all files
+  replace_placeholders_in_files(
+    framework_path,
+    framework_name,
+    bundle_prefix,
+    development_team,
+    deployment_target,
+    current_date
+  )
+end
+
+def rename_template_files(directory, framework_name)
+  # Find and rename directories first (deepest first to avoid path issues)
+  Dir.glob(File.join(directory, '**', "*#{MODULE_NAME_PLACEHOLDER}*")).sort_by { |f| -f.length }.each do |path|
+    next unless File.directory?(path)
+
+    new_path = path.gsub(MODULE_NAME_PLACEHOLDER, framework_name)
+    FileUtils.mv(path, new_path)
+  end
+
+  # Then rename files
+  Dir.glob(File.join(directory, '**', "*#{MODULE_NAME_PLACEHOLDER}*")).each do |path|
+    next unless File.file?(path)
+
+    new_path = path.gsub(MODULE_NAME_PLACEHOLDER, framework_name)
+    FileUtils.mv(path, new_path)
+  end
+end
+
+def replace_placeholders_in_files(directory, framework_name, bundle_prefix, development_team, deployment_target, current_date)
+  Dir.glob(File.join(directory, '**', '*')).each do |path|
+    next unless File.file?(path)
+
+    content = File.read(path)
+    updated_content = content
+      .gsub(MODULE_NAME_PLACEHOLDER, framework_name)
+      .gsub(BUNDLE_PREFIX_PLACEHOLDER, bundle_prefix)
+      .gsub(DEVELOPMENT_TEAM_PLACEHOLDER, development_team)
+      .gsub(DEPLOYMENT_TARGET_PLACEHOLDER, deployment_target)
+      .gsub(DATE_PLACEHOLDER, current_date)
+
+    File.write(path, updated_content) if content != updated_content
+  end
+end
+
+def update_main_project_yml(framework_name)
+  message("Updating main project.yml with #{framework_name}")
+
+  project_yml_path = File.expand_path('../project.yml', Dir.pwd)
+  project_yml = YAML.load_file(project_yml_path)
+
+  # Add project reference
+  project_yml['projectReferences'] ||= {}
+  project_yml['projectReferences'][framework_name] = {
+    'path' => "Modules/#{framework_name}/#{framework_name}.xcodeproj"
+  }
+
+  # Find the main app target (the one that's an application type)
+  main_target_name = project_yml['targets'].find { |_name, config| config['type'] == 'application' }&.first
+
+  if main_target_name
+    # Add dependency to main target
+    project_yml['targets'][main_target_name]['dependencies'] ||= []
+    new_dependency = { 'target' => "#{framework_name}/#{framework_name}" }
+
+    unless project_yml['targets'][main_target_name]['dependencies'].include?(new_dependency)
+      project_yml['targets'][main_target_name]['dependencies'] << new_dependency
+    end
+  end
+
+  # Find the main scheme
+  main_scheme_name = project_yml['schemes']&.keys&.first
+
+  if main_scheme_name && project_yml['schemes'][main_scheme_name]
+    scheme = project_yml['schemes'][main_scheme_name]
+
+    # Add to build targets
+    scheme['build'] ||= {}
+    scheme['build']['targets'] ||= {}
+    scheme['build']['targets']["#{framework_name}/#{framework_name}"] = ['test']
+
+    # Add to test coverage targets
+    scheme['test'] ||= {}
+    scheme['test']['coverageTargets'] ||= []
+    unless scheme['test']['coverageTargets'].include?("#{framework_name}/#{framework_name}")
+      scheme['test']['coverageTargets'] << "#{framework_name}/#{framework_name}"
+    end
+
+    # Add test target
+    scheme['test']['targets'] ||= []
+    test_target_entry = {
+      'name' => "#{framework_name}/#{framework_name}Tests",
+      'paralelizable' => true
+    }
+    unless scheme['test']['targets'].any? { |t| t['name'] == test_target_entry['name'] }
+      scheme['test']['targets'] << test_target_entry
+    end
+  end
+
+  # Write back the updated YAML (remove leading --- document marker)
+  yaml_content = project_yml.to_yaml.sub(/\A---\n/, '')
+  File.write(project_yml_path, yaml_content)
+end
+
+# rubocop:enable Metrics/BlockLength, Metrics/MethodLength, Metrics/AbcSize

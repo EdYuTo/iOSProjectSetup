@@ -3,6 +3,8 @@
 
 require 'yaml'
 
+import 'Modulefile'
+
 default_platform(:ios)
 
 platform :ios do
@@ -23,9 +25,7 @@ platform :ios do
   * open: true - Open the project after generation"
   lane :generate_project do |options|
     clean_project
-    generate_cache_module
-    generate_logger_module
-    generate_network_module
+    generate_all_modules
     Dir.chdir('..') do
       message('Generating Xcode project')
       sh 'bundle exec Scripts/xcodegen'
@@ -39,30 +39,6 @@ platform :ios do
     Dir.chdir('..') do
       sleep 2 # Wait for the project to be fully written to disk
       sh "open #{project_name}.xcodeproj"
-    end
-  end
-
-  desc 'Generates Cache module'
-  lane :generate_cache_module do
-    Dir.chdir('../Modules/CacheProvider') do
-      message('Generating Cache module')
-      sh 'bundle exec ../../Scripts/xcodegen'
-    end
-  end
-
-  desc 'Generates Logger module'
-  lane :generate_logger_module do
-    Dir.chdir('../Modules/DebugLoggerProvider') do
-      message('Generating Logger module')
-      sh 'bundle exec ../../Scripts/xcodegen'
-    end
-  end
-
-  desc 'Generates Network module'
-  lane :generate_network_module do
-    Dir.chdir('../Modules/NetworkProvider') do
-      message('Generating Network module')
-      sh 'bundle exec ../../Scripts/xcodegen'
     end
   end
 

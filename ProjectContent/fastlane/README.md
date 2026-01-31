@@ -15,6 +15,20 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios makeFramework
+
+```sh
+[bundle exec] fastlane ios makeFramework
+```
+
+Creates a new framework module with the given name
+
+#### Parameters
+  * frameworkName - The name of the framework to create (required)
+
+#### Example
+  bundle exec fastlane makeFramework frameworkName:MyNewModule
+
 ### ios generate_project
 
 ```sh
@@ -33,30 +47,6 @@ Generates the project
 ```
 
 Opens the project
-
-### ios generate_cache_module
-
-```sh
-[bundle exec] fastlane ios generate_cache_module
-```
-
-Generates Cache module
-
-### ios generate_logger_module
-
-```sh
-[bundle exec] fastlane ios generate_logger_module
-```
-
-Generates Logger module
-
-### ios generate_network_module
-
-```sh
-[bundle exec] fastlane ios generate_network_module
-```
-
-Generates Network module
 
 ### ios test_project
 
