@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-# rubocop:disable Metrics/BlockLength, Metrics/MethodLength, Metrics/AbcSize
+# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 
 require 'fileutils'
 require 'yaml'
@@ -10,15 +10,6 @@ DEVELOPMENT_TEAM_PLACEHOLDER = '__PROJECTDEVELOPMENTTEAM__'
 DEPLOYMENT_TARGET_PLACEHOLDER = '__DEPLOYMENTTARGET__'
 DATE_PLACEHOLDER = '__DATEIDENTIFIER__'
 
-# Helper to generate a module's xcodeproj
-def generate_module(module_folder, module_display_name = nil)
-  display_name = module_display_name || module_folder
-  Dir.chdir("../Modules/#{module_folder}") do
-    message("Generating #{display_name} module")
-    sh 'bundle exec ../../Scripts/xcodegen'
-  end
-end
-
 # Generate all modules found in the Modules directory
 def generate_all_modules
   modules_dir = File.expand_path('../Modules', Dir.pwd)
@@ -28,7 +19,10 @@ def generate_all_modules
     module_path = File.join(modules_dir, folder)
     next unless File.directory?(module_path) && File.exist?(File.join(module_path, 'project.yml'))
 
-    generate_module(folder)
+    Dir.chdir(module_path) do
+      message("Generating #{folder} module")
+      sh 'bundle exec ../../Scripts/xcodegen'
+    end
   end
 end
 
@@ -45,17 +39,14 @@ platform :ios do
   lane :makeFramework do |options|
     framework_name = options[:frameworkName]
 
-    if framework_name.nil? || framework_name.empty?
-      UI.user_error!('frameworkName parameter is required. Usage: bundle exec fastlane makeFramework frameworkName:MyModule')
-    end
+    UI.user_error!('frameworkName parameter is required. Usage: bundle exec fastlane makeFramework frameworkName:MyModule') if framework_name.nil? || framework_name.empty?
 
     modules_path = File.expand_path('../Modules', Dir.pwd)
+    FileUtils.mkdir_p(modules_path) unless Dir.exist?(modules_path)
     framework_path = File.join(modules_path, framework_name)
 
     # Check if module already exists
-    if Dir.exist?(framework_path)
-      UI.user_error!("Module '#{framework_name}' already exists at #{framework_path}")
-    end
+    UI.user_error!("Module '#{framework_name}' already exists at #{framework_path}") if Dir.exist?(framework_path)
 
     message("Creating framework: #{framework_name}")
 
@@ -79,9 +70,7 @@ def copy_module_template(framework_path, framework_name)
 
   template_path = File.join(Dir.pwd, 'Templates', 'ModuleTemplate')
 
-  unless Dir.exist?(template_path)
-    UI.user_error!("Module template not found at #{template_path}")
-  end
+  UI.user_error!("Module template not found at #{template_path}") unless Dir.exist?(template_path)
 
   # Read values from main project.yml for placeholder replacement
   main_project_yml_path = File.expand_path('../project.yml', Dir.pwd)
@@ -168,9 +157,7 @@ def update_main_project_yml(framework_name)
     project_yml['targets'][main_target_name]['dependencies'] ||= []
     new_dependency = { 'target' => "#{framework_name}/#{framework_name}" }
 
-    unless project_yml['targets'][main_target_name]['dependencies'].include?(new_dependency)
-      project_yml['targets'][main_target_name]['dependencies'] << new_dependency
-    end
+    project_yml['targets'][main_target_name]['dependencies'] << new_dependency unless project_yml['targets'][main_target_name]['dependencies'].include?(new_dependency)
   end
 
   # Find the main scheme
@@ -187,19 +174,15 @@ def update_main_project_yml(framework_name)
     # Add to test coverage targets
     scheme['test'] ||= {}
     scheme['test']['coverageTargets'] ||= []
-    unless scheme['test']['coverageTargets'].include?("#{framework_name}/#{framework_name}")
-      scheme['test']['coverageTargets'] << "#{framework_name}/#{framework_name}"
-    end
+    scheme['test']['coverageTargets'] << "#{framework_name}/#{framework_name}" unless scheme['test']['coverageTargets'].include?("#{framework_name}/#{framework_name}")
 
     # Add test target
     scheme['test']['targets'] ||= []
     test_target_entry = {
       'name' => "#{framework_name}/#{framework_name}Tests",
-      'paralelizable' => true
+      'parallelizable' => true
     }
-    unless scheme['test']['targets'].any? { |t| t['name'] == test_target_entry['name'] }
-      scheme['test']['targets'] << test_target_entry
-    end
+    scheme['test']['targets'] << test_target_entry unless scheme['test']['targets'].any? { |t| t['name'] == test_target_entry['name'] }
   end
 
   # Write back the updated YAML (remove leading --- document marker)
@@ -207,4 +190,4 @@ def update_main_project_yml(framework_name)
   File.write(project_yml_path, yaml_content)
 end
 
-# rubocop:enable Metrics/BlockLength, Metrics/MethodLength, Metrics/AbcSize
+# rubocop:enable Metrics/MethodLength, Metrics/AbcSize

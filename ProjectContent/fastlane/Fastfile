@@ -47,7 +47,7 @@ platform :ios do
 #### Optional parameters
   * open: true - Open the test results after running tests"
   lane :test_project do |options|
-    generate_project(open: false, pat: false)
+    generate_project(open: false)
     message('Running tests')
 
     actions_config = YAML.load_file('../.actions.yml')
@@ -134,8 +134,8 @@ platform :ios do
       message('Linting project')
       begin
         sh 'bundle exec Scripts/swiftlint' unless ENV['CI']
-      rescue StandardError
-        error('SwiftLint failed, please check log above for more information')
+      rescue FastlaneCore::Interface::FastlaneShellError => e
+        error("SwiftLint failed: #{e.message}")
       end
     end
   end
