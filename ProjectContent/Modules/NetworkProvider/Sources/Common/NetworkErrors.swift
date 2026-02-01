@@ -6,6 +6,7 @@
 //
 
 public enum NetworkError: Error {
+    case cancelledRequest
     case connection
     case decoding(description: String, statusCode: Int)
     case invalidParams

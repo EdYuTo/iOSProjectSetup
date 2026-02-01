@@ -136,6 +136,19 @@ final class NetworkProviderTests: XCTestCase {
         }
     }
 
+    func testMakeRequestWithCancelledRequestError() async {
+        do {
+            URLProtocolMock.error = NSError(domain: NSURLErrorDomain, code: NSURLErrorCancelled)
+
+            _ = try await sut.makeRequest(NetworkRequest(endpoint: #file))
+            XCTFail("Error should be \(NetworkError.cancelledRequest) but didn't throw")
+        } catch {
+            if case .cancelledRequest = error as? NetworkError {} else {
+                XCTFail("Error should be \(NetworkError.cancelledRequest) but is \(error)")
+            }
+        }
+    }
+
     func testMakeRequestWithGenericError() async {
         do {
             URLProtocolMock.error = NSError(domain: "testMakeRequestWithGenericError", code: -1)

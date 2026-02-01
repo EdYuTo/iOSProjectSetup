@@ -73,6 +73,8 @@ extension NetworkProvider: NetworkProviderProtocol {
                 headers: response.allHeaderFields,
                 content: data
             )
+        } catch let error as NSError where error.code == NSURLErrorCancelled {
+            throw NetworkError.cancelledRequest
         } catch let error as NSError where ConnectionError(rawValue: error.code) != nil {
             throw NetworkError.connection
         } catch {
