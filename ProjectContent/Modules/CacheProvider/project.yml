@@ -3,7 +3,7 @@ name: Cache
 options:
   defaultConfig: Release
   deploymentTarget:
-    iOS: 15.0
+    iOS: 26.0
 
 configs:
   Debug: debug
@@ -23,7 +23,7 @@ settings:
     ALWAYS_SEARCH_USER_PATHS: 'NO'
 
     # Target
-    IPHONEOS_DEPLOYMENT_TARGET: '15.0'
+    IPHONEOS_DEPLOYMENT_TARGET: '26.0'
     TARGET_DEVICE_FAMILY: '1'
     
     # Signing
