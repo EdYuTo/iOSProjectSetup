@@ -1,13 +1,13 @@
 # __PROJECTNAMEIDENTIFIER__
 
 ## Dependencies
-This projects uses [Xcodegen](https://github.com/yonaskolb/XcodeGen), [Fastlane](https://fastlane.tools/) and [Bundler](https://bundler.io/) to minimize your time setting up everything! It also has [Swiftlint](https://realm.github.io/SwiftLint/) to ensure code coding style and conventions.
+This project uses [Xcodegen](https://github.com/yonaskolb/XcodeGen), [Fastlane](https://fastlane.tools/) and [Bundler](https://bundler.io/) to minimize your time setting up everything! It also has [Swiftlint](https://realm.github.io/SwiftLint/) to enforce coding style and conventions.
 
-Please use `Xcode 16` to run this.
+Please use `Xcode 26` (iOS 26.0+ deployment target) to run this. CI runs on `macos-26` with Xcode `26.6`.
 
 ### Why those?
-[Xcodegen](https://github.com/yonaskolb/XcodeGen) is a good choice when wroking in big repos because it removes the need for pushing `.xcodeproj` and `.xcworkspace` to remote. This is possible thanks to the way it works, we provide a configuration file (`project.yml`) that is used to generate `.xcodeproj` files on the fly!
-There are other alternatives too, one that work particulary well with SPM is called [Tuist](https://tuist.dev/)
+[Xcodegen](https://github.com/yonaskolb/XcodeGen) is a good choice when working in big repos because it removes the need for pushing `.xcodeproj` and `.xcworkspace` to remote. This is possible thanks to the way it works, we provide a configuration file (`project.yml`) that is used to generate `.xcodeproj` files on the fly!
+There are other alternatives too, one that work particularly well with SPM is called [Tuist](https://tuist.dev/)
 
 [Fastlane](https://fastlane.tools/) is just awesome, it's a really powerful tool that allow creating `lanes` for each job your pipeline might need. If you see my other [test repo](https://github.com/EdYuTo/iOSProjectSetup) you'll see that i did basically the same github actions configurations as here, but using `Makefile`. You'll also see that it was necessary a couple of extra scripts to achieve what was possible with just one file with `Fastlane`.
 
@@ -26,12 +26,11 @@ brew install rbenv
 ```
 
 ```bash
-rbenv install 3.2.0
+rbenv install $(cat .ruby-version)
 ```
 
-```bash
-rbenv local 3.2.0
-```
+> [!TIP]
+> If `rbenv` doesn't know the version yet, update its definitions with `brew upgrade ruby-build`.
 
 First install any missing dependencies with:
 ```bash

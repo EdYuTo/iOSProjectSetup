@@ -43,7 +43,7 @@ platform :ios do
 #### Optional parameters
   * open: true - Open the test results after running tests"
   lane :test_project do |options|
-    generate_project(open: false, pat: false)
+    generate_project(open: false)
     message('Running tests')
 
     actions_config = YAML.load_file('../.actions.yml')
