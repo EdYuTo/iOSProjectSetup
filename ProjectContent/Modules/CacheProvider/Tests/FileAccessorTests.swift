@@ -35,7 +35,7 @@ final class FileAccessorTests: XCTestCase {
     }
 
     func testDataShouldBeRecoveredOnGet() async throws {
-        let data = "Completely valid data".data(using: .utf8)!
+        let data = Data("Completely valid data".utf8)
         let sut = makeSut()
 
         try await sut.set(data)
@@ -56,8 +56,8 @@ final class FileAccessorTests: XCTestCase {
     }
 
     func testDataShouldBeOverwrittenOnSet() async throws {
-        let data = "Completely valid data".data(using: .utf8)!
-        let newData = "Wow, this is different from before!".data(using: .utf8)!
+        let data = Data("Completely valid data".utf8)
+        let newData = Data("Wow, this is different from before!".utf8)
         let sut = makeSut()
 
         try await sut.set(data)
@@ -80,7 +80,7 @@ final class FileAccessorTests: XCTestCase {
     }
 
     func testDataShouldBeRemovedOnDelete() async throws {
-        let data = "Completely valid data".data(using: .utf8)!
+        let data = Data("Completely valid data".utf8)
         let sut = makeSut()
 
         try await sut.set(data)

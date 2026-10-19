@@ -31,13 +31,16 @@ jobs:
         with:
           bundler-cache: true
 
+      - name: Setup mise (Tuist and SwiftLint from .mise.toml)
+        uses: jdx/mise-action@v2
+
       - name: Run build
         run: |
           bundle exec fastlane generate_app open:false
       
       - name: Zip build files
         run: |
-          PROJECT_NAME=`grep '^name:' project.yml | sed 's/^name: //'`
+          PROJECT_NAME=__PROJECTNAMEIDENTIFIER__
           mkdir App
           mv build/$PROJECT_NAME-iossimulator.xcarchive/Products/Applications/$PROJECT_NAME.app App
           mv build/$PROJECT_NAME-iossimulator.xcarchive/dSYMs/$PROJECT_NAME.app.dSYM App

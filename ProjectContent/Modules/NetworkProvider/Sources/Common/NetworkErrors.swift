@@ -5,13 +5,15 @@
 //  Created on __DATEIDENTIFIER__.
 //
 
-public enum NetworkError: Error {
+public enum NetworkError: Error, Equatable {
     case cancelledRequest
     case connection
     case decoding(description: String, statusCode: Int)
     case invalidParams
     case invalidResponse
     case invalidUrl
+    case missingPathParam(name: String)
+    case unusedPathParam(name: String)
 }
 
 enum ConnectionError: Int {

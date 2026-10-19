@@ -1,3 +1,0 @@
-#!/bin/bash
-# XcodeGen looks for its SettingPresets in ../share relative to the binary, so call it through this wrapper
-exec "$(dirname "$0")/Vendor/XcodeGen/bin/xcodegen" "$@"

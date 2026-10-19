@@ -65,7 +65,10 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Run build
+      - name: Setup mise (Tuist and SwiftLint from .mise.toml)
+        uses: jdx/mise-action@v2
+
+      - name: Run tests
         run: |
           bundle exec fastlane test_project open:false
       

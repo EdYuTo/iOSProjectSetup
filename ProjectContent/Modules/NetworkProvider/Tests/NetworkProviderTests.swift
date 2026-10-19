@@ -37,7 +37,7 @@ final class NetworkProviderTests: XCTestCase {
 
         let request = NetworkRequest(
             endpoint: #file,
-            body: "{}".data(using: .utf8),
+            body: Data("{}".utf8),
             httpMethod: .post,
             queryParams: ["queryParam": "queryValue"],
             headers: [
@@ -59,9 +59,9 @@ final class NetworkProviderTests: XCTestCase {
     }
 
     func testMakeDecodingRequest() async throws {
-        URLProtocolMock.data = """
+        URLProtocolMock.data = Data("""
                 {"thisShouldBeDecoded": "good to go"}
-            """.data(using: .utf8)
+            """.utf8)
         URLProtocolMock.response = HTTPURLResponse(
             url: URL(string: #file)!,
             statusCode: 200,
@@ -71,7 +71,7 @@ final class NetworkProviderTests: XCTestCase {
 
         let request = NetworkRequest(
             endpoint: #file,
-            body: "{}".data(using: .utf8),
+            body: Data("{}".utf8),
             httpMethod: .get,
             queryParams: ["queryParam": "queryValue"],
             headers: [
@@ -112,7 +112,7 @@ final class NetworkProviderTests: XCTestCase {
         } catch {
             let error = (error as NSError)
             let expectedError = NetworkError.invalidResponse as NSError
-            guard error.domain == expectedError.domain, error.code == expectedError.code else {               
+            guard error.domain == expectedError.domain, error.code == expectedError.code else {
                 XCTFail("Error should be \(NetworkError.invalidResponse) but is \(error)")
                 return
             }
@@ -167,7 +167,7 @@ final class NetworkProviderTests: XCTestCase {
 
     func testMakeRequestWithdecoding() async {
         do {
-            URLProtocolMock.data = "{}".data(using: .utf8)
+            URLProtocolMock.data = Data("{}".utf8)
             URLProtocolMock.response = HTTPURLResponse(
                 url: URL(string: #file)!,
                 statusCode: 200,
@@ -183,8 +183,51 @@ final class NetworkProviderTests: XCTestCase {
             }
         }
     }
+
+    func testSendsEveryHttpMethodVerbatim() async throws {
+        URLProtocolMock.data = Data()
+        URLProtocolMock.response = HTTPURLResponse(
+            url: URL(string: #file)!,
+            statusCode: 204,
+            httpVersion: nil,
+            headerFields: nil
+        )!
+
+        for method in [HTTPMethod.get, .post, .put, .patch, .delete] {
+            _ = try await sut.makeRequest(NetworkRequest(endpoint: #file, httpMethod: method))
+            XCTAssertEqual(URLProtocolMock.request?.httpMethod, method.rawValue)
+        }
+    }
+
+    func testDefaultCachePolicyIsUseProtocolCachePolicy() async throws {
+        URLProtocolMock.data = Data()
+        URLProtocolMock.response = HTTPURLResponse(
+            url: URL(string: #file)!,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: nil
+        )!
+
+        _ = try await sut.makeRequest(NetworkRequest(endpoint: #file))
+
+        XCTAssertEqual(URLProtocolMock.request?.cachePolicy, .useProtocolCachePolicy)
+    }
+
+    func testCustomCachePolicyIsForwarded() async throws {
+        URLProtocolMock.data = Data()
+        URLProtocolMock.response = HTTPURLResponse(
+            url: URL(string: #file)!,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: nil
+        )!
+
+        _ = try await sut.makeRequest(NetworkRequest(endpoint: #file, cachePolicy: .reloadIgnoringLocalCacheData))
+
+        XCTAssertEqual(URLProtocolMock.request?.cachePolicy, .reloadIgnoringLocalCacheData)
+    }
 }
 
-fileprivate struct DecodableTest: Decodable {
+private struct DecodableTest: Decodable {
     let thisShouldBeDecoded: String
 }

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# rubocop:disable Style/MultilineOperationIndentation, Style/StringConcatenation, Metrics/BlockLength
 
 require 'yaml'
 
@@ -7,57 +6,62 @@ import 'Modulefile'
 
 default_platform(:ios)
 
+PROJECT_NAME = '__PROJECTNAMEIDENTIFIER__'
+WORKSPACE = "#{PROJECT_NAME}.xcworkspace"
+TEST_SCHEME = "#{PROJECT_NAME}-Workspace" # Tuist's workspace scheme: every target and test bundle
+APP_SCHEME = PROJECT_NAME
+
 platform :ios do
-  project_yml = YAML.load_file('../project.yml')
-  project_name = project_yml['name']
-
-  def message(message)
-    UI.message("⚙️ #{message}")
+  def message(text)
+    UI.message("⚙️ #{text}")
   end
 
-  def error(message)
-    UI.error("❌ #{message}")
+  # Runs a Tuist command from the project root with the version pinned in .mise.toml.
+  def tuist(command, env = {})
+    Dir.chdir('..') do
+      exports = env.map { |key, value| "#{key}=#{value}" }.join(' ')
+      sh "#{exports} mise exec -- tuist #{command}".strip
+    end
   end
 
-  desc "Generates the project
+  # MARKETING_VERSION and CURRENT_PROJECT_VERSION come from the `version` file.
+  def version_env
+    marketing, build = File.read('../version').split
+    { 'TUIST_MARKETING_VERSION' => marketing, 'TUIST_BUILD_NUMBER' => build }
+  end
+
+  desc "Fetches dependencies and generates the workspace
 
 #### Optional parameters
-  * open: true - Open the project after generation"
+  * open: true - Open the workspace after generation"
   lane :generate_project do |options|
-    clean_project
-    generate_all_modules
-    Dir.chdir('..') do
-      message('Generating Xcode project')
-      sh 'bundle exec Scripts/xcodegen'
-    end
-    update_version
+    message('Fetching external dependencies')
+    tuist('install')
+    message('Generating workspace')
+    tuist('generate --no-open', version_env)
     open_project if options[:open].nil? || options[:open]
   end
 
-  desc 'Opens the project'
+  desc 'Opens the workspace'
   lane :open_project do
-    Dir.chdir('..') do
-      sleep 2 # Wait for the project to be fully written to disk
-      sh "open #{project_name}.xcodeproj"
-    end
+    Dir.chdir('..') { sh "open #{WORKSPACE}" }
   end
 
-  desc "Tests the project
+  desc "Generates the workspace and runs every test bundle
 
 #### Optional parameters
   * open: true - Open the test results after running tests"
   lane :test_project do |options|
     generate_project(open: false)
-    message('Running tests')
-
+    # xcodebuild refuses to overwrite an existing result bundle.
+    Dir.chdir('..') { FileUtils.rm_rf(['TestResults', 'TestResults.xcresult']) }
     actions_config = YAML.load_file('../.actions.yml')
-
     begin
       # https://docs.fastlane.tools/actions/run_tests/#parameters
       setup_ci if ENV['CI']
       run_tests(
-        project: "#{project_name}.xcodeproj",
-        scheme: project_name.to_s,
+        workspace: WORKSPACE,
+        scheme: TEST_SCHEME,
         device: actions_config['test_device'].to_s,
         derived_data_path: './build_data',
         result_bundle_path: 'TestResults.xcresult'
@@ -67,76 +71,39 @@ platform :ios do
     end
   end
 
-  desc "Generate app (xcarchive)
+  desc "Builds a simulator .xcarchive of the app
 
 #### Optional parameters
   * open: true - Open the archive after generation"
   lane :generate_app do |options|
     generate_project(open: false)
-    message('Generating .app')
-
-    project_dir = File.expand_path('..', Dir.pwd)
-    archive_path = "#{project_dir}/build/#{project_name}-iossimulator.xcarchive"
-
+    archive_path = File.expand_path("../build/#{PROJECT_NAME}-iossimulator.xcarchive", Dir.pwd)
     # https://docs.fastlane.tools/actions/build_app/#parameters
     setup_ci if ENV['CI']
     build_app(
-      project: "#{project_name}.xcodeproj",
-      scheme: project_name.to_s,
+      workspace: WORKSPACE,
+      scheme: APP_SCHEME,
       configuration: 'Release',
       derived_data_path: './build_data',
       archive_path: archive_path,
       destination: 'generic/platform=iOS Simulator',
-      skip_package_ipa: true
+      skip_package_ipa: true,
+      skip_codesigning: true
     )
-
     sh "open #{archive_path}" if options[:open].nil? || options[:open]
   end
 
-  desc 'Clean build artifacts'
+  desc 'Removes generated projects and build output'
   lane :clean_project do
+    tuist('clean')
     Dir.chdir('..') do
-      message('Removing auto generated files')
-      sh "find . -maxdepth 3 -type d -name '*.xcodeproj' -exec rm -rf {} +"
-      sh "find . -maxdepth 3 -type d -name 'DerivedData' -exec rm -rf {} +"
-      sh 'rm -rf DerivedData build build_data'
-      sh 'rm -rf TestResults TestResults.xcresult'
+      sh "find . -maxdepth 3 \\( -name '*.xcodeproj' -o -name '*.xcworkspace' \\) -not -path './Tuist/*' -exec rm -rf {} +"
+      sh 'rm -rf Derived build build_data TestResults TestResults.xcresult'
     end
   end
 
-  desc 'Updates the project version based on version file'
-  lane :update_version do
-    Dir.chdir('..') do
-      message('Updating project version')
-
-      project_dir = Dir.pwd
-      xcodeproj_path = "#{project_dir}/#{project_name}.xcodeproj"
-      version_file = File.read('version').split
-
-      marketing_version = version_file[0]
-      project_version = version_file[1]
-
-      increment_version_number(
-        version_number: marketing_version,
-        xcodeproj: xcodeproj_path
-      )
-
-      increment_build_number(
-        build_number: project_version,
-        xcodeproj: xcodeproj_path
-      )
-    end
-  end
-
-  desc 'Run swiftlint'
+  desc 'Runs SwiftLint over the app and modules'
   lane :lint_project do
-    Dir.chdir('..') do
-      message('Linting project')
-      begin
-        sh 'bundle exec Scripts/swiftlint' unless ENV['CI']
-      rescue FastlaneCore::Interface::FastlaneShellError => e
-        error("SwiftLint failed: #{e.message}")
-      end
-    end
+    Dir.chdir('..') { sh './Scripts/lint.sh' }
   end
 end

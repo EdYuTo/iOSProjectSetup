@@ -1,6 +1,22 @@
 included:
-    - __PROJECTNAMEIDENTIFIER__
+  - __PROJECTNAMEIDENTIFIER__
+  - __PROJECTNAMEIDENTIFIER__Tests
+  - __PROJECTNAMEIDENTIFIER__UITests
+  - Modules
+
+excluded:
+  - Tuist
+  - fastlane
+  - Derived
 
 disabled_rules:
-    - vertical_whitespace
-    - vertical_whitespace_between_cases
+  - vertical_whitespace
+  - vertical_whitespace_between_cases
+
+# Tests use try! for fixtures; keep it visible but non-blocking.
+force_try:
+  severity: warning
+
+identifier_name:
+  excluded:
+    - id

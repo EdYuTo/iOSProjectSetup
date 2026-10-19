@@ -11,10 +11,10 @@ import XCTest
 
 final class CacheProviderTests: XCTestCase {
     // MARK: - Get
-    func testUrlProperlySetOnGet() async {
+    func testUrlProperlySetOnGet() async throws {
         let key = "key"
         let url = URL(string: "path")!
-        let hashedKey = hashedKey(key)
+        let hashedKey = try hashedKey(key)
 
         let sut = CacheProvider(storagePath: url, fileAccessorProvider: { newUrl in
             XCTAssertEqual(newUrl, url.appendingPathComponent(hashedKey))
@@ -79,10 +79,10 @@ final class CacheProviderTests: XCTestCase {
     }
 
     // MARK: - Set
-    func testUrlProperlySetOnSet() async {
+    func testUrlProperlySetOnSet() async throws {
         let key = "key"
         let url = URL(string: "path")!
-        let hashedKey = hashedKey(key)
+        let hashedKey = try hashedKey(key)
 
         let sut = CacheProvider(storagePath: url, fileAccessorProvider: { newUrl in
             XCTAssertEqual(newUrl, url.appendingPathComponent(hashedKey))
@@ -148,10 +148,10 @@ final class CacheProviderTests: XCTestCase {
     }
 
     // MARK: - Delete
-    func testUrlProperlySetOnDelete() async {
+    func testUrlProperlySetOnDelete() async throws {
         let key = "key"
         let url = URL(string: "path")!
-        let hashedKey = hashedKey(key)
+        let hashedKey = try hashedKey(key)
 
         let sut = CacheProvider(storagePath: url, fileAccessorProvider: { newUrl in
             XCTAssertEqual(newUrl, url.appendingPathComponent(hashedKey))
@@ -219,8 +219,8 @@ private extension CacheProviderTests {
         return (cache, fileAccessor)
     }
 
-    func hashedKey(_ key: Encodable) -> String {
-        let data = try! JSONEncoder().encode(key)
+    func hashedKey(_ key: Encodable) throws -> String {
+        let data = try JSONEncoder().encode(key)
         return SHA256.hash(data: data).compactMap { String(format: "%02x", $0) }.joined()
     }
 

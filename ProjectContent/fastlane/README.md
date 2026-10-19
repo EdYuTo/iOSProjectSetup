@@ -21,10 +21,10 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane ios makeFramework
 ```
 
-Creates a new framework module with the given name
+Creates a new framework module under Modules/ and links it into the app
 
 #### Parameters
-  * frameworkName - The name of the framework to create (required)
+  * frameworkName - UpperCamelCase module name (required)
 
 #### Example
   bundle exec fastlane makeFramework frameworkName:MyNewModule
@@ -35,10 +35,10 @@ Creates a new framework module with the given name
 [bundle exec] fastlane ios generate_project
 ```
 
-Generates the project
+Fetches dependencies and generates the workspace
 
 #### Optional parameters
-  * open: true - Open the project after generation
+  * open: true - Open the workspace after generation
 
 ### ios open_project
 
@@ -46,7 +46,7 @@ Generates the project
 [bundle exec] fastlane ios open_project
 ```
 
-Opens the project
+Opens the workspace
 
 ### ios test_project
 
@@ -54,7 +54,7 @@ Opens the project
 [bundle exec] fastlane ios test_project
 ```
 
-Tests the project
+Generates the workspace and runs every test bundle
 
 #### Optional parameters
   * open: true - Open the test results after running tests
@@ -65,7 +65,7 @@ Tests the project
 [bundle exec] fastlane ios generate_app
 ```
 
-Generate app (xcarchive)
+Builds a simulator .xcarchive of the app
 
 #### Optional parameters
   * open: true - Open the archive after generation
@@ -76,15 +76,7 @@ Generate app (xcarchive)
 [bundle exec] fastlane ios clean_project
 ```
 
-Clean build artifacts
-
-### ios update_version
-
-```sh
-[bundle exec] fastlane ios update_version
-```
-
-Updates the project version based on version file
+Removes generated projects and build output
 
 ### ios lint_project
 
@@ -92,7 +84,7 @@ Updates the project version based on version file
 [bundle exec] fastlane ios lint_project
 ```
 
-Run swiftlint
+Runs SwiftLint over the app and modules
 
 ----
 

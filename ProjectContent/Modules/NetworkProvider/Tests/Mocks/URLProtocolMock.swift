@@ -14,6 +14,10 @@ final class URLProtocolMock: URLProtocol {
     static var response: HTTPURLResponse?
     static var error: Error?
     static var request: URLRequest?
+    /// Seconds to wait before answering. Lets tests cancel a request while it's in flight.
+    static var delay: TimeInterval = 0
+
+    private var isStopped = false
 
     static func setup() {
         semaphore.wait()
@@ -24,6 +28,7 @@ final class URLProtocolMock: URLProtocol {
         response = nil
         error = nil
         request = nil
+        delay = 0
         semaphore.signal()
     }
 
@@ -37,6 +42,22 @@ final class URLProtocolMock: URLProtocol {
     }
 
     override func startLoading() {
+        guard Self.delay > 0 else {
+            deliver()
+            return
+        }
+        DispatchQueue.global().asyncAfter(deadline: .now() + Self.delay) { [weak self] in
+            self?.deliver()
+        }
+    }
+
+    override func stopLoading() {
+        isStopped = true
+    }
+
+    private func deliver() {
+        guard !isStopped else { return }
+
         if let error = Self.error {
             client?.urlProtocol(self, didFailWithError: error)
             return
@@ -54,6 +75,4 @@ final class URLProtocolMock: URLProtocol {
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowed)
         client?.urlProtocolDidFinishLoading(self)
     }
-
-    override func stopLoading() {}
 }

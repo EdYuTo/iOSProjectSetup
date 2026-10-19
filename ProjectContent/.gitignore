@@ -40,6 +40,7 @@ xcuserdata/
 
 ### Xcode Patch ###
 *.xcodeproj
+*.xcworkspace
 *.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
 **/Preview Content
@@ -50,8 +51,13 @@ TestResults*
 
 ### Build ###
 Build/
+build/
 build_data/
 DerivedData
+
+### Tuist ###
+Derived/
+Tuist/.build/
 
 ### Fastlane ###
 fastlane/report.xml
