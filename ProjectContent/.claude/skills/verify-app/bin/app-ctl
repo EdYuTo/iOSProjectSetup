@@ -1,0 +1,10 @@
+#!/bin/bash
+# Live verification CLI for the app and the DesignSystem catalog. Prints one JSON object per command. See ../SKILL.md.
+set -euo pipefail
+SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+HARNESS="$SKILL_DIR/harness"
+if [ ! -d "$HARNESS/node_modules" ]; then
+  echo "app-ctl: installing harness dependencies (first run)…" >&2
+  (cd "$HARNESS" && npm ci --silent >&2)
+fi
+exec node "$HARNESS/app-ctl.mjs" "$@"

@@ -13,9 +13,14 @@ struct ContentView: View {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
+                .accessibilityIdentifier("home.globe")
             Text("Hello, world!")
+                .accessibilityIdentifier("home.greeting")
         }
         .padding()
+        // Every element agents and UI tests touch gets an identifier: <screen>.<element>[.<qualifier>].
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("home.root")
     }
 }
 

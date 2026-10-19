@@ -82,5 +82,23 @@ The module gets its own `Project.swift`, and one line is added to `Tuist/Project
 
 Subclass `SnapshotTestCase` (from `TestSupport`) and call `verify(view)`. Record references with `Scripts/snapshots.sh record <Scheme> <TestTarget/TestClass>`, then check them with `Scripts/snapshots.sh verify …`.
 
+## Agentic verification
+
+This project ships tooling for coding agents ([Claude Code](https://claude.com/claude-code)), described in `CLAUDE.md` and `docs/adr/0001-live-verification-and-feature-map.md`:
+
+- **`verify-app` skill** (`.claude/skills/verify-app/`): `bin/app-ctl` builds the app, launches it in the simulator through Appium, taps and types by accessibility identifier, reads the accessibility tree, and saves screenshots and videos to `.verify/evidence/` (gitignored). It needs Node 22+; the first run installs its pinned dependencies and builds WebDriverAgent (about 3 minutes).
+
+  ```bash
+  B=.claude/skills/verify-app/bin/app-ctl
+  $B doctor
+  $B build --app app && $B launch --app app
+  $B snapshot && $B screenshot home
+  $B cleanup
+  ```
+
+- **Feature Map** (`.claude/skills/verify-app/features/`): an index plus one small file per user-facing feature, saying how to reach it and how to drive it. Every new or changed feature updates its file in the same change.
+- **`/maintain-verification-skill`** (`.claude/skills/maintain-verification-skill/`, vendored from Lauren's pstack): an audit pass that checks every feature file against the code and the running app, and fixes the map and the harness when they drift. Run it regularly.
+- **XCUITests** stay the regression suite: every flow verified live gets one, using the same identifiers.
+
 ## TBD
 Update as you please

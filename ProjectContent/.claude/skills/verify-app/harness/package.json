@@ -1,0 +1,12 @@
+{
+  "name": "app-verify-harness",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": { "test": "node --test --test-reporter=tap test/" },
+  "dependencies": {
+    "appium": "3.8.0",
+    "appium-xcuitest-driver": "12.17.1",
+    "webdriverio": "10.0.2"
+  }
+}

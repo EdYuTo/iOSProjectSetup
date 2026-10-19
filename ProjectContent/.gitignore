@@ -65,3 +65,8 @@ fastlane/test_output
 
 ### Environment ###
 .secrets
+
+### Live verification (app-ctl) ###
+# Evidence (screenshots, videos) and session state stay local.
+.verify/
+node_modules/

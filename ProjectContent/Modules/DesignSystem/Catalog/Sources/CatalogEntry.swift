@@ -32,11 +32,14 @@ struct CatalogList: View {
                             "Add tokens and components to \(DesignSystem.name), then list them in CatalogEntry.all."
                         )
                     )
+                    .accessibilityElement(children: .contain)
+                    .accessibilityIdentifier("catalog.empty")
                 } else {
                     List(entries) { entry in
                         NavigationLink(entry.title) { entry.page.navigationTitle(entry.title) }
                             .accessibilityIdentifier("catalog.entry.\(entry.id)")
                     }
+                    .accessibilityIdentifier("catalog.list")
                 }
             }
             .navigationTitle("Catalog")

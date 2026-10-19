@@ -31,6 +31,17 @@ final class __PROJECTNAMEIDENTIFIER__UITests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
 
+    /// Verified live with app-ctl (see .claude/skills/verify-app/features/home.md), then pinned here.
+    func testHomeShowsTheGreeting() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        let greeting = app.staticTexts["home.greeting"]
+        XCTAssertTrue(greeting.waitForExistence(timeout: 10))
+        XCTAssertEqual(greeting.label, "Hello, world!")
+        XCTAssertTrue(app.images["home.globe"].exists)
+    }
+
     func testLaunchPerformance() throws {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
             // This measures how long it takes to launch your application.
