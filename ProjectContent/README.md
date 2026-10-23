@@ -63,7 +63,7 @@ bundle exec fastlane generate_project
 - `Project.swift`: the app and its tests. `Workspace.swift` adds every `Modules/*` project.
 - `Tuist/ProjectDescriptionHelpers`: shared settings (`ProjectConfig`), `Project.module(...)`, and the app's module list (`AppModules.swift`).
 - `Modules/`:
-  - `NetworkProvider`: async `URLSession` client with path parameters, an injectable session, and a dedicated error for cancelled requests.
+  - `NetworkProvider`: async `URLSession` client with path parameters, per-request timeouts, an injectable session, and a dedicated error for cancelled requests. `DownloadProvider` downloads large files straight to disk on a foreground or background session, reporting progress, completion and failure as `DownloadEvent`s on one `AsyncStream`, with pause/resume (resume data kept on disk), cancellation, `runningIDs()` to re-attach after a relaunch, and `handleBackgroundEvents(completion:)` for the app delegate's background-session callback.
   - `CacheProvider`: file cache with expiry, plus `SecureStorageProvider` backed by the Keychain.
   - `DebugLoggerProvider`: debug logging helpers.
   - `TestSupport`: linked by test bundles only; `SnapshotTestCase` gives snapshot tests without third-party code.

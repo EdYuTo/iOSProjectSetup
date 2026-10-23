@@ -7,9 +7,11 @@
 
 import Foundation
 
+/// URLSession-backed implementation of `NetworkProviderProtocol`.
 public final class NetworkProvider {
     private let loader: URLSessionDataLoading
 
+    /// Creates a provider that performs requests on the given session.
     public init(session: URLSession = .shared) {
         self.loader = session
     }
@@ -17,29 +19,6 @@ public final class NetworkProvider {
     /// Test seam: lets tests control the single suspension point of a request.
     init(loader: URLSessionDataLoading) {
         self.loader = loader
-    }
-
-    private func buildRequest(with request: NetworkRequestProtocol) throws -> URLRequest {
-        let endpoint = try PathTemplate.resolve(request.endpoint, with: request.pathParams)
-        guard var urlComponents = URLComponents(string: endpoint) else {
-            throw NetworkError.invalidUrl
-        }
-        urlComponents.queryItems = request.queryParams?.compactMap { key, value in
-            URLQueryItem(name: key, value: value)
-        }
-
-        guard let url = urlComponents.url else {
-            throw NetworkError.invalidParams
-        }
-
-        var urlRequest = URLRequest(url: url, cachePolicy: request.cachePolicy)
-        urlRequest.httpMethod = request.httpMethod.rawValue
-        urlRequest.httpBody = request.body
-        request.headers?.forEach { key, value in
-            urlRequest.addValue(value, forHTTPHeaderField: key)
-        }
-
-        return urlRequest
     }
 }
 
@@ -62,7 +41,7 @@ extension NetworkProvider: NetworkProviderProtocol {
 
     public func makeRequest(_ request: NetworkRequestProtocol) async throws -> NetworkResponse<Data> {
         try checkCancellation()
-        let urlRequest = try buildRequest(with: request)
+        let urlRequest = try URLRequestBuilder.build(from: request)
 
         do {
             let (data, response) = try await loader.load(urlRequest)
